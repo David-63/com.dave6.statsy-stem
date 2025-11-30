@@ -1,0 +1,15 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Core.Editor.SplitView orientation="Horizontal" language-direction="Inherit" enabled="true" fixed-pane-initial-dimension="200">
+        <ui:VisualElement name="left-panel" style="flex-grow: 1; width: auto; height: auto; min-width: auto; flex-shrink: 1;">
+            <uie:Toolbar style="width: auto; height: auto; align-items: center; flex-direction: row; justify-content: space-between; flex-shrink: 1;">
+                <uie:ToolbarSearchField style="width: auto; height: auto; min-width: 60px; align-items: stretch;" />
+                <ui:Button text="Create" name="create-button" style="height: 20px; -unity-text-align: middle-center; text-overflow: clip; white-space: pre;" />
+            </uie:Toolbar>
+            <ui:ListView name="ListView" style="flex-grow: 1;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="right-panel" style="flex-grow: 1; align-self: stretch; flex-shrink: 1;">
+            <uie:PropertyField binding-path="m_Name" name="name-field" />
+            <Core.Editor.Inspector style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </Core.Editor.SplitView>
+</ui:UXML>

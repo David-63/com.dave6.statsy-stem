@@ -12,5 +12,4 @@ ScriptableObject 기반으로 스탯 데이터베이스를 만들고, 게임 내
 ## 사용 방법
 
 1. 패키지를 프로젝트에 추가
-2. `Runtime`과 `Editor` 모듈이 자동 포함
-3. ScriptableObject로 스탯 데이터베이스 생성 후 필요에 맞게 사용
+2. ScriptableObject로 스탯 데이터베이스 생성 후 필요에 맞게 사용

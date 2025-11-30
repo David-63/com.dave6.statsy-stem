@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.dave6.statsystem/StatSystem/Editor/StatDatabaseEditorWindow.uss?fileID=7433441132597879392&amp;guid=8db250d275ef0c24e980acbfabf05c0c&amp;type=3#StatDatabaseEditorWindow" />
+    <uie:Toolbar>
+        <uie:ToolbarButton text="Stats" name="stats-tab" style="flex-grow: 1;" />
+        <uie:ToolbarButton text="Primary Stats" name="primary-stats-tab" style="flex-grow: 1;" />
+        <uie:ToolbarButton text="Attributes" name="attributes-tab" style="flex-grow: 1;" />
+    </uie:Toolbar>
+    <StatSystem.Editor.StatCollectionEditor name="stats" />
+    <StatSystem.Editor.StatCollectionEditor name="primary-stats" style="display: none;" />
+    <StatSystem.Editor.StatCollectionEditor name="attributes" style="display: none;" />
+</ui:UXML>
