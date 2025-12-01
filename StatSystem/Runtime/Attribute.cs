@@ -4,19 +4,19 @@ namespace StatSystem
 {
     public class Attribute : Stat
     {
-        protected int _currentValue;
-        public int CurrentValue { get => _currentValue; private set => _currentValue = value; }
+        protected int m_CurrentValue;
+        public int currentValue { get => m_CurrentValue; private set => m_CurrentValue = value; }
         public event System.Action CurrentValueChanged;
         public event System.Action<StatModifier> AppliedModifier;
         
         public Attribute(StatDefinition definition) : base(definition)
         {
-            CurrentValue = Value;
+            currentValue = baseValue;
         }
 
         public virtual void ApplyModifier(StatModifier modifier)
         {
-            int nextValue = CurrentValue;
+            int nextValue = currentValue;
 
             switch (modifier.Type)
             {
@@ -31,11 +31,11 @@ namespace StatSystem
                 nextValue = modifier.Magnitude;
                 break;
             }
-            nextValue = Mathf.Clamp(nextValue, 0, Value);
+            nextValue = Mathf.Clamp(nextValue, 0, value);
 
-            if (CurrentValue != nextValue)
+            if (currentValue != nextValue)
             {
-                CurrentValue = nextValue;
+                currentValue = nextValue;
                 CurrentValueChanged?.Invoke();
                 AppliedModifier?.Invoke(modifier);
             }

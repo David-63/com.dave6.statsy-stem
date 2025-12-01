@@ -5,23 +5,22 @@ namespace StatSystem
 {
     public class PrimaryStat : Stat
     {
-        int baseValue;
-        public override int BaseValue { get => baseValue; protected set => baseValue = value; }
+        int m_BaseValue;
+        public override int baseValue { get => m_BaseValue; protected set => m_BaseValue = value; }
 
         public PrimaryStat(StatDefinition definition) : base(definition)
         {
-            baseValue = definition.BaseValue;
-            CalculateValue();
+            baseValue = definition.baseValue;
         }
 
         internal void Add(int amount)
         {
-            BaseValue += amount;
+            baseValue += amount;
             CalculateValue();
         }
         internal void Substract(int amount)
         {
-            BaseValue -= amount;
+            baseValue -= amount;
             CalculateValue();
         }
     }

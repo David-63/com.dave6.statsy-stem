@@ -1,0 +1,7 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.dave6.statsystem/Core/Editor/NodeGraphEditorWindow.uss?fileID=7433441132597879392&amp;guid=ea3d28d3802804545a5a95cb436f5186&amp;type=3#NodeGraphEditorWindow" />
+    <Core.Editor.SplitView fixed-pane-initial-dimension="300">
+        <ui:VisualElement name="left-panel" style="flex-shrink: 1; width: 200px; height: 600px;" />
+        <Core.Editor.NodeGraphView />
+    </Core.Editor.SplitView>
+</ui:UXML>

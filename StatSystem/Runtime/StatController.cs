@@ -1,27 +1,26 @@
 using System;
 using System.Collections.Generic;
+using StatSystem.Nodes;
 using UnityEngine;
 
 namespace StatSystem
 {
     public class StatController : MonoBehaviour
     {
-        [SerializeField] StatDatabase statDatabase;
-        protected Dictionary<string, Stat> stats = new(StringComparer.OrdinalIgnoreCase);
-        public Dictionary<string, Stat> Stats => stats;
+        [SerializeField] StatDatabase m_StatDatabase;
+        protected Dictionary<string, Stat> m_Stats = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, Stat> stats => m_Stats;
 
-        bool isInitialized;
-        public bool IsInitialized => isInitialized;
+        bool m_IsInitialized;
+        public bool isInitialized => m_IsInitialized;
         public event Action Initialized;
         public event Action WillUninitialize;
 
         protected void Awake()
         {
-            if (!IsInitialized)
+            if (!m_IsInitialized)
             {
                 Initialize();
-                isInitialized = true;
-                Initialized?.Invoke();
             }
         }
 
@@ -32,17 +31,53 @@ namespace StatSystem
 
         void Initialize()
         {
-            foreach (var definition in statDatabase.stats)
+            foreach (StatDefinition definition in m_StatDatabase.stats)
             {
-                Stats.Add(definition.name, new Stat(definition));
+                m_Stats.Add(definition.name, new Stat(definition));
             }
-            foreach (var definition in statDatabase.attributes)
+
+            foreach (StatDefinition definition in m_StatDatabase.primaryStats)
             {
-                Stats.Add(definition.name, new Attribute(definition));
+                m_Stats.Add(definition.name, new PrimaryStat(definition));
             }
-            foreach (var definition in statDatabase.primaryStats)
+            
+            foreach (StatDefinition definition in m_StatDatabase.attributes)
             {
-                Stats.Add(definition.name, new PrimaryStat(definition));
+                m_Stats.Add(definition.name, new Attribute(definition));
+            }
+
+            InitializeStatFormulas();
+
+            foreach (Stat stat in m_Stats.Values)
+            {
+                stat.Initialize();
+            }
+            
+            m_IsInitialized = true;
+            Initialized?.Invoke();
+        }
+
+        protected virtual void InitializeStatFormulas()
+        {
+            foreach (Stat currentStat in m_Stats.Values)
+            {
+                if (currentStat.definition.formula != null && currentStat.definition.formula.rootNode != null)
+                {
+                    List<StatNode> statNodes = currentStat.definition.formula.FindNodesOfType<StatNode>();
+
+                    foreach (StatNode statNode in statNodes)
+                    {
+                        if (m_Stats.TryGetValue(statNode.statName.Trim(), out Stat stat))
+                        {
+                            statNode.stat = stat;
+                            stat.valueChanged += currentStat.CalculateValue;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Stat {statNode.statName.Trim()} does not exist!");
+                        }
+                    }
+                }
             }
         }
     }

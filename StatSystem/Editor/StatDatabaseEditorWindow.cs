@@ -31,8 +31,10 @@ namespace StatSystem.Editor
 
         void OnSelectionChange()
         {
+            // project 창에서 StatDatabase 선택 시 에디터 창에 반영
             m_Database = Selection.activeObject as StatDatabase;
         }
+
 
         public void CreateGUI()
         {

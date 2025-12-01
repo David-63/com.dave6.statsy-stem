@@ -1,12 +1,6 @@
 ## [0.0.1] - 2025.11.30
 
 ### Added
-- Basic stat system script:
-  - Stat, PrimaryStat, Attribute
-  - StatDatabase, StatDefinition, StatModifier
-  - StatController
-- StatDatabase Editor Window
-  - Create new stats
-  - Edit stat names and values
-  - Duplicate existing stats
-  - Delete stats
+- 노드 그래프 추가:
+  - 스텟 데이터베이스에 Formula 기능 추가
+  - 노드 그래프로 속성 편집 가능
