@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,11 +14,13 @@ namespace Dave6.StatSystem
         void InitializeStat();
 
         // visitor 패턴을 사용해서 상호작용..?
-
     }
 
     /// <summary>
     /// 캐릭터의 전반적인 스텟 핸들링 제공
+    /// 1. 목표 스텟 찾기
+    /// 2. 이팩트 생성
+    /// ..?
     /// </summary>
     public class StatHandler
     {
@@ -29,6 +30,8 @@ namespace Dave6.StatSystem
         // StatDatabase SO를 키값으로 씀
         protected Dictionary<StatDefinition, BaseStat> m_Stats = new();
         public Dictionary<StatDefinition, BaseStat> stats => m_Stats;
+
+        readonly Dictionary<EffectDefinition, EffectPreset> m_cachedEffects = new();
 
 
         public StatHandler(StatDatabase statDatabase)
@@ -89,5 +92,49 @@ namespace Dave6.StatSystem
             }
             return null;
         }
+        public BaseStat GetStat(StatDefinition name)
+        {
+            foreach (var pair in m_Stats)
+            {
+                if (pair.Key == name)
+                    return pair.Value;
+            }
+            return null;
+        }
+
+        public void ApplyEffect(EffectDefinition definition, BaseStat target)
+        {
+            EffectPreset effectPreset = GetOrCreateEffectPreset(definition);
+
+            new EffectInstance(definition, target, effectPreset).Apply();
+        }
+
+        EffectPreset GetOrCreateEffectPreset(EffectDefinition definition)
+        {
+            if (!m_cachedEffects.TryGetValue(definition, out var sources))
+            {
+                sources = BuildEffectPreset(definition);
+                m_cachedEffects.Add(definition, sources);
+            }
+            return sources;
+        }
+
+        EffectPreset BuildEffectPreset(EffectDefinition definition)
+        {
+            var list = new List<SourcePair>();
+
+            foreach (var tuple in definition.sourceStats)
+            {
+                var stat = GetStat(tuple.key.name);
+                if (stat != null)
+                {
+                    list.Add(new SourcePair(stat, tuple.value));
+                }
+            }
+
+            return new EffectPreset(list);
+        }
+
+
     }
 }

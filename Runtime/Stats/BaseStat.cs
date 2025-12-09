@@ -51,7 +51,7 @@ namespace Dave6.StatSystem
             // ======================================================================
             // # current 비율 적용 #
             AfterValueCalculated();
-            
+
         }
 
         /// <summary>

@@ -7,17 +7,17 @@ namespace Dave6.StatSystem
         public EffectDefinition definition { get; private set; }
         public ResourceStat targetStat { get; private set; }
 
-        List<SourcePair> m_Sources;
-        public List<SourcePair> sources => m_Sources;
+        EffectPreset m_Sources;
+        public EffectPreset sources => m_Sources;
         float m_TotalValue;
 
         /// <summary>
-        /// 1)Effect 정의  2)대상 스텟
+        /// 1)Effect 정의  2)대상 스텟  3)빠른참조¿
         /// </summary>
-        public EffectInstance(EffectDefinition definition, ResourceStat target, List<SourcePair> sources)
+        public EffectInstance(EffectDefinition definition, BaseStat target, EffectPreset sources)
         {
             this.definition = definition;
-            targetStat = target;
+            targetStat = target as ResourceStat;
             m_Sources = sources;
             InitializeEffectValue();
         }
@@ -27,7 +27,7 @@ namespace Dave6.StatSystem
             float totalWeight = 0;
 
             // total값에 각 sourceStat.finalValue * weight 더하기
-            foreach (var pair in m_Sources)
+            foreach (var pair in m_Sources.sources)
             {
                 totalWeight += pair.stat.finalValue * pair.weight;
             }

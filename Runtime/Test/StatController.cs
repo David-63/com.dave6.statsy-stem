@@ -44,23 +44,34 @@ namespace ProtoCode
             // derivedStat.AddModifier(new StatModifier(this, ModifierOperationType.Flat, 5));
             // Debug.Log($"{derivedStat} FinalValue: {derivedStat.finalValue}");
 
-            var healthStat = m_StatHandler.GetStat("R_Health") as ResourceStat;
-            Debug.Log($"Before Effect -> Health: {healthStat.currentValue}/{healthStat.finalValue}");
+            // // 스텟에 직접 때려박는 방식
+            // {
+            //     var healthStat = m_StatHandler.GetStat("R_Health") as ResourceStat;
+            //     Debug.Log($"Before Effect -> Health: {healthStat.currentValue}/{healthStat.finalValue}");
 
-            List<SourcePair> sources = new();
-            foreach (var tuple in testEffect.sourceStats)
+            //     List<SourcePair> sources = new();
+            //     foreach (var tuple in testEffect.sourceStats)
+            //     {
+            //         var sourceStat = m_StatHandler.GetStat(tuple.key.name);
+            //         if (sourceStat != null)
+            //         {
+            //             sources.Add(new SourcePair(sourceStat, tuple.value));
+            //             Debug.Log($"Effect Source: {sourceStat.definition.name}, Weight: {tuple.value}");
+            //         }
+            //     }
+
+            //     var hitEffect = new EffectInstance(testEffect, healthStat, sources);
+            //     hitEffect.Apply();
+            //     Debug.Log($"After Effect -> Health: {healthStat.currentValue}/{healthStat.finalValue}");
+            // }
+
             {
-                var sourceStat = m_StatHandler.GetStat(tuple.key.name);
-                if (sourceStat != null)
-                {
-                    sources.Add(new SourcePair(sourceStat, tuple.value));
-                    Debug.Log($"Effect Source: {sourceStat.definition.name}, Weight: {tuple.value}");
-                }
+                var healthStat = m_StatHandler.GetStat("R_Health") as ResourceStat;
+                Debug.Log($"Before Effect -> Health: {healthStat.currentValue}/{healthStat.finalValue}");
+                m_StatHandler.ApplyEffect(testEffect, healthStat);
+                Debug.Log($"After Effect -> Health: {healthStat.currentValue}/{healthStat.finalValue}");
             }
 
-            var hitEffect = new EffectInstance(testEffect, healthStat, sources);
-            hitEffect.Apply();
-            Debug.Log($"After Effect -> Health: {healthStat.currentValue}/{healthStat.finalValue}");
         }
     }
 }

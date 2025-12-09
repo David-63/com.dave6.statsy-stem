@@ -21,13 +21,24 @@ namespace Dave6.StatSystem
 
     public struct SourcePair
     {
-        public BaseStat stat;
-        public float weight;
+        public readonly BaseStat stat;
+        public readonly float weight;
 
         public SourcePair(BaseStat stat, float weight)
         {
             this.stat = stat;
             this.weight = weight;
+        }
+    }
+
+    public class EffectPreset
+    {
+        readonly List<SourcePair> m_Sources;
+        public IReadOnlyList<SourcePair> sources => m_Sources;
+
+        public EffectPreset(IEnumerable<SourcePair> sources)
+        {
+            m_Sources = new List<SourcePair>(sources);
         }
     }
 
