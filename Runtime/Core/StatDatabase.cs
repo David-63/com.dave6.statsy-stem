@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dave6.StatSystem.Stat;
 using UnityEngine;
 
 namespace Dave6.StatSystem

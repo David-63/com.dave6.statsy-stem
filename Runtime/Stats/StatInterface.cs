@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
+using Dave6.StatSystem.Effect;
+using Dave6.StatSystem.Stat;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Stat
 {
     public interface IDerived
     {
@@ -31,6 +32,9 @@ namespace Dave6.StatSystem
         }
     }
 
+    /// <summary>
+    /// 참조할 스텟의 key와 weight 정보가 담겨있음
+    /// </summary>
     public class EffectPreset
     {
         readonly List<SourcePair> m_Sources;

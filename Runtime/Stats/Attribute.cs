@@ -1,6 +1,6 @@
 using System;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Stat
 {
     /// <summary>
     /// 

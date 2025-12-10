@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Stat
 {
     public class SecondaryStat : BaseStat, IDerived
     {

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Dave6.StatSystem.Stat;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Effect
 {
     [Serializable]
     public enum EffectOperationType
@@ -36,17 +37,21 @@ namespace Dave6.StatSystem
     [CreateAssetMenu(fileName = "EffectDefinition", menuName = "DaveAssets/StatSystem/Effect")]
     public class EffectDefinition : ScriptableObject
     {
-        // 참조 속성
-        [SerializeField] List<EffectFormulaSource> m_SourceStats;
-        public List<EffectFormulaSource> sourceStats => m_SourceStats;
-
         // 연산식
         [SerializeField] EffectOperationType m_OperationType;
         public EffectOperationType operationType => m_OperationType;
 
-        // 적용방식
+        // 적용방식(아직 사용 안함, Strategy 패턴으로 구현할듯?)
         [SerializeField] EffectApplyMode m_ApplyMode;
         public EffectApplyMode applyMode => m_ApplyMode;
+
+        // 전달값 방식 (BaseValueType) | Stat Based, Flat Based 이렇게 구현할수도 있음
+
+        [SerializeField] float m_FlatValue;
+        public float flatValue => m_FlatValue;
+        // 참조 속성
+        [SerializeField] List<EffectFormulaSource> m_SourceStats;
+        public List<EffectFormulaSource> sourceStats => m_SourceStats;
 
         // 유지시간
         [SerializeField] float m_Duration = -1;

@@ -2,8 +2,7 @@
     "name": "StatSystem",
     "rootNamespace": "Dave6.StatSystem",
     "references": [
-        "GUID:acb680708cfad1644a5c42ac93cd3b14",
-        "GUID:124f52acbf58a464d99c6c6d8a224e3c"
+        "GUID:acb680708cfad1644a5c42ac93cd3b14"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

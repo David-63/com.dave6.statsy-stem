@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Dave6.StatSystem.Effect;
 using UnityEngine;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Stat
 {
     public class ResourceStat : BaseStat, IDerived, IEffectApplicable
     {

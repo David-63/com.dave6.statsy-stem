@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Dave6.StatSystem.Effect;
+using Dave6.StatSystem.Stat;
 using UnityEngine;
 
 namespace Dave6.StatSystem
@@ -6,10 +8,13 @@ namespace Dave6.StatSystem
     /// <summary>
     /// 스텟 시스템을 사용하는 컨트롤러가 인터페이스를 구현
     /// </summary>
+    
     public interface IEntity
     {
         StatDatabase statDatabase { get; }
         StatHandler statHandler { get; }
+
+        public ResourceStat health { get; set; }
 
         void InitializeStat();
 
@@ -32,6 +37,9 @@ namespace Dave6.StatSystem
         public Dictionary<StatDefinition, BaseStat> stats => m_Stats;
 
         readonly Dictionary<EffectDefinition, EffectPreset> m_cachedEffects = new();
+
+        // 채력 스텟 캐싱
+        ResourceStat m_Health;
 
 
         public StatHandler(StatDatabase statDatabase)
@@ -88,7 +96,9 @@ namespace Dave6.StatSystem
             foreach (var pair in m_Stats)
             {
                 if (pair.Key.name == name)
+                {
                     return pair.Value;
+                }
             }
             return null;
         }
@@ -97,8 +107,35 @@ namespace Dave6.StatSystem
             foreach (var pair in m_Stats)
             {
                 if (pair.Key == name)
+                {
                     return pair.Value;
+                }
             }
+            return null;
+        }
+
+        public ResourceStat GetHealthStat()
+        {
+            if (m_Health != null)
+            {
+                Debug.Log($"{m_Health}");
+                return m_Health;
+            }
+            else
+            {
+                foreach (var kv in m_Stats)
+                {
+                    if (kv.Key.name.Contains("R_Health"))
+                    {
+                        m_Health = kv.Value as ResourceStat;
+                        Debug.Log($"{m_Health}");
+                        return m_Health;
+                    }
+                }
+            }
+
+            Debug.Log("Health가 없거나 네이밍이 'R_Health' 와 다름 ");
+
             return null;
         }
 

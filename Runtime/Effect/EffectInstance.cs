@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Dave6.StatSystem.Stat;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Effect
 {
     public class EffectInstance
     {
@@ -32,7 +33,7 @@ namespace Dave6.StatSystem
                 totalWeight += pair.stat.finalValue * pair.weight;
             }
             // 최종 base값 반환
-            m_TotalValue = totalWeight;
+            m_TotalValue = totalWeight + definition.flatValue;
         }
 
         public virtual void Apply()

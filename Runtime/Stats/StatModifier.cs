@@ -2,7 +2,7 @@
 using System;
 using UnityUtils.Timer;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Stat
 {
     /*
         effect와 다르게 이건 스텟에 종속된 클래스기 때문에 ScriptableObject로 만들면 안좋은

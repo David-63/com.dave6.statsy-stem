@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Dave6.StatSystem
+namespace Dave6.StatSystem.Stat
 {
     public abstract class BaseStat
     {
