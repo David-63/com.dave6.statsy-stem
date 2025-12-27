@@ -5,28 +5,25 @@ using Dave6.StatSystem.Stat;
 
 namespace Dave6.StatSystem.Effect
 {
+
+    #region Effect Enum 정의
     [Serializable]
     public enum EffectOperationType
     {
-        Addition,
-        Subtraction,
-        PercentCurrentIncrease,
-        PercentCurrentDecrease,
-        PercentMaxIncrease,
-        PercentMaxDecrease,
+        Current,
+        CurrentPercent,
+        MaxPercent,
     }
 
+//==========================================================================
+
     [Serializable]
-    public enum EffectApplyMode
+    public enum EffectSourceType
     {
-        Instant,                // 즉시 1회 적용
-        Periodic,               // 일정 시간 동안 주기?적으로 적용
-        Sustained,              // 버프 디버프처럼 지속시간동안 단 한번 적용됨
-        // Stackable,              // 누적되는 방식, 다른 타입에 추가되는 플래그 개념¿
+        Owner,      // 시전자, 공격자
+        Static      // 맵, 트랩, 아이템
     }
-    /*
-    ExcutionMode, StackMode 이렇게 나누는것도 고려해볼만 할듯
-    */
+
     [Serializable]
     public struct EffectFormulaSource
     {
@@ -34,29 +31,63 @@ namespace Dave6.StatSystem.Effect
         public float value;         // 얼마나 영향을 주는지
     }
 
-    [CreateAssetMenu(fileName = "EffectDefinition", menuName = "DaveAssets/StatSystem/Effect")]
+
+//==========================================================================
+
+    [Serializable]
+    public enum EffectApplyMode
+    {
+        Instant,                // 즉시 1회 적용
+        Periodic,             // 반복 적용        (지속피해 지속회복)
+        Sustained,              // 1회 적용 및 유지     (버프 디버프)
+    }
+
+    [Serializable]
+    public class InstantPayload
+    {
+        public EffectOperationType operationType;
+    }
+    
+    [Serializable]
+    public class PeriodicPayload
+    {
+        public EffectOperationType operationType;
+        public float tickInterval = 0.1f;
+    }
+
+    [Serializable]
+    public class SustainedPayload
+    {
+        public StatValueType valueType;
+    }
+
+    #endregion
+
+    [CreateAssetMenu(fileName = "EffectDefinitionTest", menuName = "DaveAssets/StatSystem/EffectDefinitionTest")]
     public class EffectDefinition : ScriptableObject
     {
-        // 연산식
-        [SerializeField] EffectOperationType m_OperationType;
-        public EffectOperationType operationType => m_OperationType;
+        public EffectSourceType sourceType;
+        public float flatValue;
+        public List<EffectFormulaSource> sourceStats;
 
-        // 적용방식(아직 사용 안함, Strategy 패턴으로 구현할듯?)
-        [SerializeField] EffectApplyMode m_ApplyMode;
-        public EffectApplyMode applyMode => m_ApplyMode;
+        public EffectApplyMode applyMode;
+        public InstantPayload instant;
+        public SustainedPayload sustained;
+        public PeriodicPayload periodic;
 
-        // 전달값 방식 (BaseValueType) | Stat Based, Flat Based 이렇게 구현할수도 있음
-        [SerializeField] float m_FlatValue;
-        public float flatValue => m_FlatValue;
-        // 참조 속성
-        [SerializeField] List<EffectFormulaSource> m_SourceStats;
-        public List<EffectFormulaSource> sourceStats => m_SourceStats;
-        // 배율 추가
-        [SerializeField] float m_OutputMultiplier = 1f;
-        public float outputMultiplier => m_OutputMultiplier;
+        public float duration = 1;
+        public float outputMultiplier = 1;
 
-        // 유지시간
-        [SerializeField] float m_Duration = -1;
-        public float duration => m_Duration;
     }
+
+    #region 아직 안씀
+    [Serializable]
+    public enum EffectStackMode
+    {
+        None,                   // 중첩 불가
+        RefreshDuration,        // 지속시간만 갱신
+        StackValue,             // 값 누적
+        Replace,                // 기존 효과 교체
+    }
+    #endregion
 }

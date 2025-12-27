@@ -20,13 +20,10 @@ namespace ProtoCode
 
         public void Invoke<T>(T target) where T : Component, IStatReceiver
         {
-            IEntity entity = target as IEntity;
+            IStatController entity = target as IStatController;
             var stat = entity.statHandler.GetHealthStat();
-            Debug.Log($"Before Effect -> Health: {stat.currentValue}/{stat.finalValue}");
-
-
-            entity.statHandler.ApplyEffect(effectDefinition, stat);
-            Debug.Log($"After Effect -> Health: {stat.currentValue}/{stat.finalValue}");
+            
+            entity.statHandler.CreateEffectInstance(effectDefinition, stat);
 
             Destroy(gameObject);
         }

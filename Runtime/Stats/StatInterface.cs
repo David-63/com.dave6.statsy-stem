@@ -16,8 +16,9 @@ namespace Dave6.StatSystem.Stat
 
     public interface IEffectApplicable
     {
-        float currentValue { get; }
-        void ApplyEffect(EffectDefinition effect, float value);
+        void ApplyCurrentValue(EffectDefinition effect, float value);
+        void ApplyCurrentPercent(EffectDefinition effect, float value);
+        void ApplyMaxPercent(EffectDefinition effect, float value);
     }
 
     public struct SourcePair

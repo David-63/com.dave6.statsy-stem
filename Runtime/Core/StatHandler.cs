@@ -9,7 +9,7 @@ namespace Dave6.StatSystem
     /// 스텟 시스템을 사용하는 컨트롤러가 인터페이스를 구현
     /// </summary>
     
-    public interface IEntity
+    public interface IStatController
     {
         StatDatabase statDatabase { get; }
         StatHandler statHandler { get; }
@@ -17,6 +17,8 @@ namespace Dave6.StatSystem
         public ResourceStat health { get; set; }
 
         void InitializeStat();
+
+        void CheckHealth();
 
         // visitor 패턴을 사용해서 상호작용..?
     }
@@ -36,7 +38,9 @@ namespace Dave6.StatSystem
         protected Dictionary<StatDefinition, BaseStat> m_Stats = new();
         public Dictionary<StatDefinition, BaseStat> stats => m_Stats;
 
-        readonly Dictionary<EffectDefinition, EffectPreset> m_cachedEffects = new();
+        readonly Dictionary<EffectDefinition, EffectPreset> m_CachedEffectPresets = new();
+
+        List<EffectInstance> m_AppliedEffects = new();
 
         // 채력 스텟 캐싱
         ResourceStat m_Health;
@@ -90,6 +94,26 @@ namespace Dave6.StatSystem
             }
         }
 
+        public void OnUpdate()
+        {
+            var toRemove = new List<EffectInstance>();
+
+            foreach (var effect in m_AppliedEffects)
+            {
+                effect.OnUpdate();
+                if (effect.disposed)
+                {
+                    toRemove.Add(effect);
+                }
+            }
+
+            foreach (var effect in toRemove)
+            {
+                effect.Cleanup();
+                m_AppliedEffects.Remove(effect);
+            }
+        }
+
 
         public BaseStat GetStat(string name)
         {
@@ -119,7 +143,6 @@ namespace Dave6.StatSystem
         {
             if (m_Health != null)
             {
-                Debug.Log($"{m_Health}");
                 return m_Health;
             }
             else
@@ -129,7 +152,7 @@ namespace Dave6.StatSystem
                     if (kv.Key.name.Contains("R_Health"))
                     {
                         m_Health = kv.Value as ResourceStat;
-                        Debug.Log($"{m_Health}");
+                        //Debug.Log($"{m_Health}");
                         return m_Health;
                     }
                 }
@@ -140,19 +163,30 @@ namespace Dave6.StatSystem
             return null;
         }
 
-        public void ApplyEffect(EffectDefinition definition, BaseStat target)
+        public EffectInstance CreateEffectInstance(EffectDefinition definition, BaseStat target)
         {
             EffectPreset effectPreset = GetOrCreateEffectPreset(definition);
+            var effect = new EffectInstance(definition, target, effectPreset);
+            m_AppliedEffects.Add(effect);
 
-            new EffectInstance(definition, target, effectPreset).Apply();
+            if (EffectApplyMode.Sustained == definition.applyMode)
+            {
+                effect.ApplySustained();
+            }
+            else
+            {
+                effect.ApplyInstant();
+            }
+
+            return effect;
         }
 
         EffectPreset GetOrCreateEffectPreset(EffectDefinition definition)
         {
-            if (!m_cachedEffects.TryGetValue(definition, out var sources))
+            if (!m_CachedEffectPresets.TryGetValue(definition, out var sources))
             {
                 sources = BuildEffectPreset(definition);
-                m_cachedEffects.Add(definition, sources);
+                m_CachedEffectPresets.Add(definition, sources);
             }
             return sources;
         }

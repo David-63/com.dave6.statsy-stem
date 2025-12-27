@@ -12,6 +12,7 @@ namespace Dave6.StatSystem.Stat
         float m_CurrentValue;
         public float currentValue => m_CurrentValue;
 
+        public event Action onCurrentValueChanged;
         
 
         List<SourcePair> m_SourceStats;        
@@ -23,8 +24,8 @@ namespace Dave6.StatSystem.Stat
         public override void Initialize()
         {
             CalculateValue();
-            m_PreviousFinalValue = m_FinalValue;
-            m_CurrentValue = m_FinalValue;
+            m_PreviousFinalValue = finalValue;
+            m_CurrentValue = finalValue;
             _initialFinish = true;
         }
 
@@ -59,58 +60,32 @@ namespace Dave6.StatSystem.Stat
         }
 
 
-        public void ApplyEffect(EffectDefinition effect, float value)
+        public void ApplyCurrentValue(EffectDefinition effect, float value)
         {
-            switch (effect.operationType)
-            {
-                case EffectOperationType.Addition:
-                    // 현재값 += value
-                    m_CurrentValue += value * effect.outputMultiplier;
-                break;
-                case EffectOperationType.Subtraction:
-                    // 현재값 -= value
-                    m_CurrentValue -= value * effect.outputMultiplier;
-                break;
-                case EffectOperationType.PercentCurrentIncrease:
-                    {
-                        // 현재값 *= (1 + 퍼센트)
-                        float delta = m_CurrentValue * value;
-                        m_CurrentValue += delta * effect.outputMultiplier;
-                        break;
-                    }
-                case EffectOperationType.PercentCurrentDecrease:
-                    {
-                        // 현재값 *= (1 - 퍼센트)
-                        float delta = m_CurrentValue * value;
-                        m_CurrentValue -= delta * effect.outputMultiplier;
-                        break;
-                    }
-                case EffectOperationType.PercentMaxIncrease:
-                    // 최대값 증가 → 현재값도 비례 증가시키려면 ratio 조정 필요
-                    {
-                        float delta = finalValue * value;
-                        float scaledDelta = delta * effect.outputMultiplier;
+            m_CurrentValue += value * effect.outputMultiplier;
+            onCurrentValueChanged?.Invoke();
+            ClampCurrentValue();
+        }
+        public void ApplyCurrentPercent(EffectDefinition effect, float value)
+        {
+            // 현재값 *= (1 + 퍼센트)
+            float delta = m_CurrentValue * value;
+            m_CurrentValue += delta * effect.outputMultiplier;
+            onCurrentValueChanged?.Invoke();
+            ClampCurrentValue();
+        }
+        public void ApplyMaxPercent(EffectDefinition effect, float value)
+        {
+            // 최대값 증가 → 현재값도 비례 증가시키려면 ratio 조정 필요
+            float delta = finalValue * value;
+            float scaledDelta = delta * effect.outputMultiplier;
 
-                        float oldMax = finalValue;
-                        float newMax = oldMax + scaledDelta;
+            float oldMax = finalValue;
+            float newMax = oldMax + scaledDelta;
 
-                        float ratio = oldMax > 0f ? m_CurrentValue / oldMax : 0f;
-                        m_CurrentValue = newMax * ratio;
-                        break;
-                    }
-                case EffectOperationType.PercentMaxDecrease:
-                    {
-                        float delta = finalValue * value;
-                        float scaledDelta = delta * effect.outputMultiplier;
-
-                        float oldMax = finalValue;
-                        float newMax = Mathf.Max(0f, oldMax - scaledDelta);
-
-                        float ratio = oldMax > 0f ? m_CurrentValue / oldMax : 0f;
-                        m_CurrentValue = newMax * ratio;
-                        break;
-                    }
-            }
+            float ratio = oldMax > 0f ? m_CurrentValue / oldMax : 0f;
+            m_CurrentValue = newMax * ratio;
+            onCurrentValueChanged?.Invoke();
             ClampCurrentValue();
         }
 
@@ -118,5 +93,7 @@ namespace Dave6.StatSystem.Stat
         {
             m_CurrentValue = Mathf.Clamp(m_CurrentValue, 0f, finalValue);
         }
+
+        public void ResetCurrentValue() => m_CurrentValue = finalValue;
     }
 }

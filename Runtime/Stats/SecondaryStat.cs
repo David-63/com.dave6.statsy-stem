@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dave6.StatSystem.Effect;
 
 namespace Dave6.StatSystem.Stat
 {
@@ -22,6 +23,5 @@ namespace Dave6.StatSystem.Stat
             // 최종 base값 반환
             return baseValue + totalWeight;
         }
-
     }
 }

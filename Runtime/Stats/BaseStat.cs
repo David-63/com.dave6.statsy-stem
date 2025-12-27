@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Dave6.StatSystem.Effect;
 using UnityEngine;
 
 namespace Dave6.StatSystem.Stat
@@ -7,27 +8,21 @@ namespace Dave6.StatSystem.Stat
     public abstract class BaseStat
     {
         public StatDefinition definition { get; private set; }
-        int m_BaseValue;
-        public int baseValue => m_BaseValue;
+        public int baseValue { get; private set; }
+        public int finalValue { get; private set; }
 
         /// <summary>
         /// UI, 애니메이션, 사운드, 효과, 기타 시스템에 이벤트 전달
         /// </summary>
         public event Action onValueChanged;
 
-        // lazy 계산은 시스템이 자리잡고 나서 고려할 사항        
-        // bool m_IsDirty = true;
-
-        protected int m_FinalValue;
-        public int finalValue => m_FinalValue;
-
-        protected List<StatModifier> m_Modifiers = new();
+        protected List<BaseContribution> m_BaseContributions = new();
 
         public BaseStat(StatDefinition definition)
         {
             this.definition = definition;
-            m_BaseValue = definition.initialValue;
-            m_FinalValue = definition.initialValue;
+            baseValue = definition.initialValue;
+            finalValue = definition.initialValue;
         }
 
         public virtual void Initialize()
@@ -46,7 +41,7 @@ namespace Dave6.StatSystem.Stat
 
             // ======================================================================
             // # Modifier 계산 #
-            CalculateModifiers(calcBase);
+            CalculateFinalValue(calcBase);
 
             // ======================================================================
             // # current 비율 적용 #
@@ -63,19 +58,19 @@ namespace Dave6.StatSystem.Stat
             return baseValue;
         }
 
-        void CalculateModifiers(int calcBase)
+        void CalculateFinalValue(int calcBase)
         {
             float flat = 0;
             float percent = 0f;             // 합연산
             float finalMultiplier = 1f;     // 곱연산
 
-            foreach (var m in m_Modifiers)
+            foreach (var m in m_BaseContributions)
             {
-                (flat, percent, finalMultiplier) = m.operationType switch
+                (flat, percent, finalMultiplier) = m.valueType switch
                 {
-                    ModifierOperationType.Flat              => (flat + m.magnitude, percent, finalMultiplier),
-                    ModifierOperationType.Percent           => (flat, percent + m.magnitude * 0.01f, finalMultiplier),
-                    ModifierOperationType.finalMultiplier   => (flat, percent, finalMultiplier * (1f + m.magnitude * 0.01f)),
+                    StatValueType.Flat              => (flat + m.magnitude, percent, finalMultiplier),
+                    StatValueType.Percent           => (flat, percent + m.magnitude * 0.01f, finalMultiplier),
+                    StatValueType.finalMultiplier   => (flat, percent, finalMultiplier * (1f + m.magnitude * 0.01f)),
                     _ => throw new NotSupportedException()
                 };
             }
@@ -87,7 +82,7 @@ namespace Dave6.StatSystem.Stat
             result = Mathf.FloorToInt(result * (1f + percent));
 
             // 최종 배율 적용
-            m_FinalValue = Mathf.FloorToInt(result * finalMultiplier);
+            finalValue = Mathf.FloorToInt(result * finalMultiplier);
         }
 
         /// <summary>
@@ -95,50 +90,16 @@ namespace Dave6.StatSystem.Stat
         /// </summary>
         protected virtual void AfterValueCalculated() { }
 
-
-        // `modifier 추가 제거를 어떤식으로 구현되는가` 이건 과제임
-
-        public void AddModifier(StatModifier modifier)
+        public void AddBaseContribution(BaseContribution contribution)
         {
-            m_Modifiers.Add(modifier);
-            modifier.onExpired += HandleModifierExpired;
-
+            m_BaseContributions.Add(contribution);
             CalculateValue();
-            onValueChanged?.Invoke();
         }
-
-        public void RemoveModifierFromSource(object source)
+        
+        public void RemoveBaseContribution(BaseContribution contribution)
         {
-            if (source == null) return;
-
-            int prevCount = m_Modifiers.Count;
-
-            m_Modifiers.RemoveAll(m => m.source == source);
-            
-            if (m_Modifiers.Count != prevCount)
-            {
-                CalculateValue();
-                onValueChanged?.Invoke();
-            }
-        }
-        public void RemoveAllModifiers()
-        {
-            if (m_Modifiers.Count > 0)
-            {
-                m_Modifiers.Clear();
-
-                CalculateValue();
-                onValueChanged?.Invoke();
-            }
-        }
-        void HandleModifierExpired(StatModifier modifier)
-        {
-            modifier.onExpired -= HandleModifierExpired;
-            m_Modifiers.Remove(modifier);
-
+            if (m_BaseContributions.Remove(contribution))
             CalculateValue();
-            onValueChanged?.Invoke();
-
         }
     }
 }
